@@ -11,7 +11,9 @@ from .connectivity_matrices import (sym_matrix_to_vec, vec_to_sym_matrix,
 from .group_sparse_cov import (GroupSparseCovariance,
     GroupSparseCovarianceCV, group_sparse_covariance)
 
+from .population_shrunk_covariance import PopulationShrunkCovariance
+
 __all__ = ['sym_matrix_to_vec', 'vec_to_sym_matrix', 'sym_to_vec',
            'ConnectivityMeasure', 'cov_to_corr', 'prec_to_partial',
            'GroupSparseCovariance', 'GroupSparseCovarianceCV',
-           'group_sparse_covariance']
+           'group_sparse_covariance', 'PopulationShrunkCovariance']
