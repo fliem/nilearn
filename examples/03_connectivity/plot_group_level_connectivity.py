@@ -31,29 +31,12 @@ and
 <https://hal.inria.fr/hal-02068389>`_
 for two systematic studies on multiple large samples.
 """
-# Matrix plotting from Nilearn: nilearn.plotting.plot_matrix
-import numpy as np
-import matplotlib.pylab as plt
-
-
-def plot_matrices(matrices, matrix_kind):
-    n_matrices = len(matrices)
-    fig = plt.figure(figsize=(n_matrices * 4, 4))
-    for n_subject, matrix in enumerate(matrices):
-        plt.subplot(1, n_matrices, n_subject + 1)
-        matrix = matrix.copy()  # avoid side effects
-        # Set diagonal to zero, for better visualization
-        np.fill_diagonal(matrix, 0)
-        vmax = np.max(np.abs(matrix))
-        title = '{0}, subject {1}'.format(matrix_kind, n_subject)
-        plotting.plot_matrix(matrix, vmin=-vmax, vmax=vmax, cmap='RdBu_r',
-                             title=title, figure=fig, colorbar=False)
-
 
 ###############################################################################
-# Load brain development fMRI dataset and MSDL atlas
-# -------------------------------------------------------------------
-# We study only 30 subjects from the dataset, to save computation time.
+# Load data and extract signal
+# ----------------------------
+# We will be working with the brain development fMRI dataset and only use 30
+# subjects, to save computation time.
 from nilearn import datasets
 
 rest_data = datasets.fetch_development_fmri(n_subjects=30)
@@ -95,9 +78,34 @@ for func_file, confound_file, phenotypic in zip(
 
 print('Data has {0} children.'.format(len(children)))
 
+
+
+###############################################################################
+# Different ways to represent connectivity
+# ----------------------------------------
+# First, we create a helper function to plot matrices
+import numpy as np
+import matplotlib.pylab as plt
+
+
+def plot_matrices(matrices, matrix_kind):
+    n_matrices = len(matrices)
+    fig = plt.figure(figsize=(n_matrices * 4, 4))
+    for n_subject, matrix in enumerate(matrices):
+        plt.subplot(1, n_matrices, n_subject + 1)
+        matrix = matrix.copy()  # avoid side effects
+        # Set diagonal to zero, for better visualization
+        np.fill_diagonal(matrix, 0)
+        vmax = np.max(np.abs(matrix))
+        title = '{0}, subject {1}'.format(matrix_kind, n_subject)
+        plotting.plot_matrix(matrix, vmin=-vmax, vmax=vmax, cmap='RdBu_r',
+                             title=title, figure=fig, colorbar=False)
+
+
+
 ###############################################################################
 # ROI-to-ROI correlations of children
-# -----------------------------------
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # The simplest and most commonly used kind of connectivity is correlation. It
 # models the full (marginal) connectivity between pairwise ROIs. We can
 # estimate it using :class:`nilearn.connectome.ConnectivityMeasure`.
@@ -136,7 +144,7 @@ plotting.plot_connectome(mean_correlation_matrix, msdl_coords,
 
 ###############################################################################
 # Studying partial correlations
-# -----------------------------
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # We can also study **direct connections**, revealed by partial correlation
 # coefficients. We just change the `ConnectivityMeasure` kind
 partial_correlation_measure = ConnectivityMeasure(kind='partial correlation')
@@ -159,7 +167,7 @@ plotting.plot_connectome(
 
 ###############################################################################
 # Extract connectivity with tangent embedding
-# -----------------------------------------------------------------------
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # We can use **both** correlations and partial correlations to capture
 # reproducible connectivity patterns at the group-level and build a **robust**
 # **group connectivity matrix**. This is done by the **tangent** kind.
@@ -185,7 +193,7 @@ plot_matrices(tangent_matrices[:4], 'tangent variability')
 
 ###############################################################################
 # Extract connectivity via PoSCE
-# --------------------------
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # Next, we use the population shrinkage of covariance estimator
 # :class:`nilearn.connectome.PopulationShrunkCovariance` .
 # It uses the correlation of a group to better estimate connectivity of a
@@ -198,7 +206,7 @@ posce_matrices = posce_measure.fit_transform(children)
 plot_matrices(posce_matrices[:4], 'PoSCE')
 
 ###############################################################################
-# What kind of connectivity is most powerful for classification?
+# Extract biomarkers and use them for  classification?
 # --------------------------------------------------------------
 # *ConnectivityMeasure* can output the estimated subjects coefficients
 # as 1D arrays through the parameter *vectorize*.
@@ -265,4 +273,3 @@ plt.tight_layout()
 # and `Rahim et al. 2019
 # <https://hal.inria.fr/hal-02068389>`_ across many cohorts and clinical
 # questions, the tangent and PoSCE estimators should be preferred.
-
