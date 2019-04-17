@@ -175,7 +175,7 @@ tangent_matrices = tangent_measure.fit_transform(children)
 # `tangent_matrices` model individual connectivities as
 # **perturbations** of the group connectivity matrix `tangent_measure.mean_` .
 # Keep in mind that these subjects-to-group variability matrices do not
-# straight reflect individual brain connections. For instance negative
+# straightforwardly reflect individual brain connections. For instance negative
 # coefficients can not be interpreted as anticorrelated regions.
 plot_matrices(tangent_matrices[:4], 'tangent variability')
 
@@ -262,9 +262,7 @@ plt.tight_layout()
 # While the comparison is not fully conclusive on this small dataset,
 # `Dadi et al 2019
 # <https://www.sciencedirect.com/science/article/pii/S1053811919301594>`_
-# and
-# Rahim et al. 2019
-# <https://hal.inria.fr/hal-02068389>`_ ,
-#  across many cohorts and clinical questions, the tangent
-# and PoSCE estimators should be preferred.
+# and `Rahim et al. 2019
+# <https://hal.inria.fr/hal-02068389>`_ across many cohorts and clinical
+# questions, the tangent and PoSCE estimators should be preferred.
 
