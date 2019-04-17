@@ -184,17 +184,16 @@ plot_matrices(tangent_matrices[:4], 'tangent variability')
 # variation is expected to be zero
 
 ###############################################################################
-# Extract subjects via PoSCE
+# Extract connectivity via PoSCE
 # --------------------------
 # Next, we use the population shrinkage of covariance estimator
 # :class:`nilearn.connectome.PopulationShrunkCovariance` .
 # It uses the correlation of a group to better estimate connectivity of a
 # single subject.
-from nilearn.connectome import PopulationShrunkCovariance, vec_to_sym_matrix
+from nilearn.connectome import PopulationShrunkCovariance
 
 posce_measure = PopulationShrunkCovariance(shrinkage=1e-2)
-posce_embeddings = posce_measure.fit_transform(pooled_subjects)
-posce_matrices = vec_to_sym_matrix(posce_embeddings)
+posce_matrices = posce_measure.fit_transform(children)
 
 plot_matrices(posce_matrices[:4], 'PoSCE')
 
@@ -207,7 +206,8 @@ connectivity_biomarkers = {}
 kinds = ['correlation', 'partial correlation', 'tangent', 'PoSCE']
 for kind in kinds:
     if kind == 'PoSCE':
-        conn_measure = PopulationShrunkCovariance(shrinkage=1e-2)
+        posce_measure = PopulationShrunkCovariance(shrinkage=1e-2,
+                                                  vectorize=True)
         connectivity_biomarkers[kind] = posce_measure.\
             fit_transform(pooled_subjects)
     else:
